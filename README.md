@@ -16,6 +16,15 @@ quiver2jekyll enables blog writers to use Quiver to write their blog posts and e
 
 ## Installation
 
+### Homebrew (preferred)
+
+```bash
+brew tap bradley-curran/tap
+brew install quiver2jekyll
+```
+
+### Manual
+
 - [Download the script](https://raw.githubusercontent.com/bradley-curran/quiver2jekyll/master/quiver2jekyll)
 - Put it on your path
 - `chmod u+x quiver2jekyll`
