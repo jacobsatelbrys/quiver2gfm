@@ -1,6 +1,7 @@
-#!/usr/bin/ruby
+#!/usr/bin/env ruby -w
 require 'date'
 require 'json'
+require 'reverse_markdown'
 
 def showhelp(message)
 	puts message + "\n"
@@ -22,7 +23,7 @@ showhelp("meta.json doesn't exist") unless File.exist? metapath
 metajson = JSON.parse(File.read(metapath))
 
 frontmatter_title = metajson["title"]
-title = metajson["title"].gsub(" ", "-").downcase
+title = metajson["title"].gsub(" ", "").downcase
 
 updated_at_date = DateTime.strptime(metajson["updated_at"].to_s, "%s")
 day = "%02d" % updated_at_date.day
@@ -44,8 +45,10 @@ contentjson["cells"].each do |cell|
 			output << "```\n"
 		when "markdown"
 			output << "#{cell["data"]}\n"
+    when "text"
+      output << "#{ReverseMarkdown.convert(cell["data"])}\n"
 		else 
-			showhelp("all cells must be code or markdown types")
+			showhelp("latex cells are not supported")
 	end
 
 	output << "\n"
