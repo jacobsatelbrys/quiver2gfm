@@ -1,4 +1,4 @@
-quiver2jekyll
+quiver2gfm
 =============
 
 A utility to convert a Quiver note to a markdown post for Jekyll. 

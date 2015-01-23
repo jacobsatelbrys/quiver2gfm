@@ -1,0 +1,55 @@
+#!/usr/bin/ruby
+require 'date'
+require 'json'
+
+def showhelp(message)
+	puts message + "\n"
+	puts "Usage:"
+	puts "quiver2gfm <test.qvnote>"
+	exit
+end
+
+showhelp("not enough arguments") unless ARGV.length == 1
+
+inputfolder = ARGV[0]
+metapath = File.join(inputfolder, "meta.json")
+contentpath = File.join(inputfolder, "content.json")
+
+showhelp("content.json doesn't exist") unless File.exist? contentpath
+showhelp("meta.json doesn't exist") unless File.exist? metapath
+
+# generate filename and front matter from meta.json
+metajson = JSON.parse(File.read(metapath))
+
+frontmatter_title = metajson["title"]
+title = metajson["title"].gsub(" ", "-").downcase
+
+updated_at_date = DateTime.strptime(metajson["updated_at"].to_s, "%s")
+day = "%02d" % updated_at_date.day
+month = "%02d" % updated_at_date.month
+year = updated_at_date.year
+
+output_filename = "#{title}-#{year}#{month}#{day}.md"
+
+output = "# #{frontmatter_title}\n\n"
+
+# add the post content
+contentjson = JSON.parse(File.read(contentpath))
+
+contentjson["cells"].each do |cell|
+	case cell["type"]
+		when "code"
+			output << "```#{cell["language"]}\n"
+			output << "#{cell["data"]}\n"
+			output << "```\n"
+		when "markdown"
+			output << "#{cell["data"]}\n"
+		else 
+			showhelp("all cells must be code or markdown types")
+	end
+
+	output << "\n"
+end
+
+puts output_filename
+File.open(output_filename, "w"){|file| file.write(output)}
